@@ -1,2 +1,4 @@
+[![Build Status](https://img.shields.io/travis/patrickkerrigan/paypal-ewp.svg?style=flat-square)](https://travis-ci.org/patrickkerrigan/paypal-ewp) [![Code Climate](https://img.shields.io/codeclimate/maintainability/patrickkerrigan/paypal-ewp.svg?style=flat-square)](https://codeclimate.com/github/patrickkerrigan/paypal-ewp) [![Coverage](https://img.shields.io/codeclimate/c/patrickkerrigan/paypal-ewp.svg?style=flat-square)](https://codeclimate.com/github/patrickkerrigan/paypal-ewp) [![PHP 7.0](https://img.shields.io/badge/php-7.0-blue.svg?style=flat-square)](http://php.net/) [![Packagist](https://img.shields.io/packagist/v/pkerrigan/paypal-ewp.svg?style=flat-square)](https://packagist.org/packages/pkerrigan/paypal-ewp)
+
 # paypal-ewp
 A PHP library for generating encrypted PayPal buttons (EWP)
