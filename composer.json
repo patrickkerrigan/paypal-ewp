@@ -1,0 +1,30 @@
+{
+  "name": "pkerrigan/paypal-ewp",
+  "description": "A PHP library for generating encrypted PayPal buttons (EWP)",
+  "keywords": ["PayPal", "EWP", "encrypted buttons", "payments"],
+  "type": "library",
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Patrick Kerrigan",
+      "homepage": "https://patrickkerrigan.uk/"
+    }
+  ],
+
+  "require": {
+    "php": ">=7.0",
+    "ext-openssl": "*"
+  },
+
+  "require-dev": {
+    "phpunit/phpunit": "^6.4"
+  },
+
+  "autoload": {
+    "psr-4": {"Pkerrigan\\PaypalEwp\\": "src/"}
+  },
+
+  "autoload-dev": {
+    "psr-4": {"Pkerrigan\\PaypalEwp\\": "tests/"}
+  }
+}
