@@ -7,7 +7,7 @@ namespace Pkerrigan\PaypalEwp;
  * @author Patrick Kerrigan (patrickkerrigan.uk)
  * @since 30/12/2017
  */
-class ButtonGenerator
+class ButtonGenerator implements ButtonGeneratorInterface
 {
     const TEMP_FILE_PREFIX = 'PPEWP';
 
