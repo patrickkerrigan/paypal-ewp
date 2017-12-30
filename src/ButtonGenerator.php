@@ -9,11 +9,17 @@ namespace Pkerrigan\PaypalEwp;
  */
 class ButtonGenerator
 {
-    function encrypt(PaypalCertificate $paypal, MerchantCertificate $merchant, array $buttonVariables)
+    const TEMP_FILE_PREFIX = 'PPEWP';
+
+    /**
+     * @param PaypalCertificate $paypal
+     * @param MerchantCertificate $merchant
+     * @param array $buttonVariables
+     * @return string
+     */
+    public function encrypt(PaypalCertificate $paypal, MerchantCertificate $merchant, array $buttonVariables)
     {
-        $rawDataFile = tempnam(sys_get_temp_dir(), 'PPEWP');
-        $signedDataFile = tempnam(sys_get_temp_dir(), 'PPEWP');
-        $encryptedDataFile = tempnam(sys_get_temp_dir(), 'PPEWP');
+        list($rawDataFile, $signedDataFile, $encryptedDataFile) = $this->tempFiles(3);
 
         $buttonVariables['cert_id'] = $merchant->getCertificateId();
 
@@ -42,15 +48,7 @@ class ButtonGenerator
         $mimeData = file_get_contents($encryptedDataFile);
         $data = "-----BEGIN PKCS7-----\n{$this->stripMimeHeaders($mimeData)}\n-----END PKCS7-----";
 
-        if (file_exists($rawDataFile)) {
-            unlink($rawDataFile);
-        }
-        if (file_exists($signedDataFile)) {
-            unlink($signedDataFile);
-        }
-        if (file_exists($encryptedDataFile)) {
-            unlink($encryptedDataFile);
-        }
+        $this->cleanupFiles($rawDataFile, $signedDataFile, $encryptedDataFile);
 
         return $data;
     }
@@ -72,10 +70,10 @@ class ButtonGenerator
     }
 
     /**
-     * @param $mimeMessage
+     * @param string $mimeMessage
      * @return string
      */
-    protected function stripMimeHeaders($mimeMessage): string
+    protected function stripMimeHeaders(string $mimeMessage): string
     {
         $mimeParts = explode("\n\n", $mimeMessage);
 
@@ -83,11 +81,38 @@ class ButtonGenerator
     }
 
     /**
-     * @param $signedDataFile
+     * @param string $signedDataFile
      */
-    protected function mimeToDer($signedDataFile)
+    protected function mimeToDer(string $signedDataFile)
     {
         $mimeSignature = file_get_contents($signedDataFile);
         file_put_contents($signedDataFile, base64_decode($this->stripMimeHeaders($mimeSignature)));
+    }
+
+    /**
+     * @param string[] $files
+     */
+    protected function cleanupFiles(string ...$files)
+    {
+        foreach ($files as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+    /**
+     * @param int $number
+     * @return string[]
+     */
+    protected function tempFiles(int $number): array
+    {
+        $files = [];
+
+        for ($i = 0; $i < $number; $i++) {
+            $files[] = tempnam(sys_get_temp_dir(), self::TEMP_FILE_PREFIX);
+        }
+
+        return $files;
     }
 }
