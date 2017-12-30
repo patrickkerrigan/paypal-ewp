@@ -14,6 +14,13 @@ You'll need the following data to generate a button:
 * The path to PayPal's public certificate in PEM format on disk
 * The [HTML Variables](https://developer.paypal.com/docs/classic/paypal-payments-standard/integration-guide/Appx_websitestandard_htmlvariables/) you wish to add to your button
 
+## Installation
+The recommended way to install this library is via Composer:
+
+```bash
+composer require pkerrigan/paypal-ewp ^1.0
+```
+
 ## Usage
 Below is a complete example which generates an encrypted button for submitting a shopping cart:
 
