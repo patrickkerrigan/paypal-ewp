@@ -2,6 +2,8 @@
 
 namespace Pkerrigan\PaypalEwp;
 
+use Pkerrigan\PaypalEwp\Exception\EncryptionException;
+
 /**
  *
  * @author Patrick Kerrigan (patrickkerrigan.uk)
@@ -10,6 +12,10 @@ namespace Pkerrigan\PaypalEwp;
 class ButtonGenerator implements ButtonGeneratorInterface
 {
     const TEMP_FILE_PREFIX = 'PPEWP';
+    /**
+     * @var string|null
+     */
+    protected $lastOpensslError;
 
     /**
      * @param PaypalCertificate $paypal
@@ -25,25 +31,9 @@ class ButtonGenerator implements ButtonGeneratorInterface
 
         file_put_contents($rawDataFile, $this->buildDataBlob($buttonVariables));
 
-        openssl_pkcs7_sign(
-            $rawDataFile,
-            $signedDataFile,
-            "file://{$merchant->getCertificatePath()}",
-            ["file://{$merchant->getKeyPath()}", $merchant->getKeyPassphrase()],
-            [],
-            PKCS7_BINARY
-        );
-
+        $this->pkcs7Sign($merchant, $rawDataFile, $signedDataFile);
         $this->mimeToDer($signedDataFile);
-
-        openssl_pkcs7_encrypt(
-            $signedDataFile,
-            $encryptedDataFile,
-            "file://{$paypal->getCertificatePath()}",
-            [],
-            PKCS7_BINARY,
-            OPENSSL_CIPHER_3DES
-        );
+        $this->pkcs7Encrypt($paypal, $signedDataFile, $encryptedDataFile);
 
         $mimeData = file_get_contents($encryptedDataFile);
         $data = "-----BEGIN PKCS7-----\n{$this->stripMimeHeaders($mimeData)}\n-----END PKCS7-----";
@@ -114,5 +104,73 @@ class ButtonGenerator implements ButtonGeneratorInterface
         }
 
         return $files;
+    }
+
+    /**
+     * @param MerchantCertificate $merchant
+     * @param $inputFile
+     * @param $outputFile
+     */
+    protected function pkcs7Sign(MerchantCertificate $merchant, string $inputFile, string $outputFile)
+    {
+        set_error_handler([$this, 'opensslErrorHandler'], E_ALL);
+
+        $signed = openssl_pkcs7_sign(
+            $inputFile,
+            $outputFile,
+            "file://{$merchant->getCertificatePath()}",
+            ["file://{$merchant->getKeyPath()}", $merchant->getKeyPassphrase()],
+            [],
+            PKCS7_BINARY
+        );
+
+        restore_error_handler();
+
+        if (!$signed) {
+            throw new EncryptionException("Unable to sign the provided data " . $this->lastOpensslError ?? "");
+        }
+    }
+
+    /**
+     * @param PaypalCertificate $paypal
+     * @param $inputFile
+     * @param $outputFile
+     */
+    protected function pkcs7Encrypt(PaypalCertificate $paypal, string $inputFile, string $outputFile)
+    {
+        set_error_handler([$this, 'opensslErrorHandler'], E_ALL);
+
+        $encrypted = openssl_pkcs7_encrypt(
+            $inputFile,
+            $outputFile,
+            "file://{$paypal->getCertificatePath()}",
+            [],
+            PKCS7_BINARY,
+            OPENSSL_CIPHER_3DES
+        );
+
+        restore_error_handler();
+
+        if (!$encrypted) {
+            throw new EncryptionException("Unable to encrypt the provided data " . $this->lastOpensslError ?? "");
+        }
+    }
+
+    /**
+     * @param string $message
+     */
+    protected function encryptionException(string $message)
+    {
+        throw new EncryptionException($message);
+    }
+
+    /**
+     * @param int $errNo
+     * @param string $message
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function opensslErrorHandler(int $errNo, string $message)
+    {
+        $this->lastOpensslError = $message;
     }
 }

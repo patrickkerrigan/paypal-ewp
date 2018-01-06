@@ -14,8 +14,16 @@ class ButtonGeneratorTest extends TestCase
     const ENCRYPTED_HEADER = "MIME-Version: 1.0\nContent-Disposition: attachment; filename=\"smime.p7m\"\nContent-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"\nContent-Transfer-Encoding: base64\n\n";
     const SIGNED_HEADER = "MIME-Version: 1.0\nContent-Disposition: attachment; filename=\"smime.p7m\"\nContent-Type: application/x-pkcs7-mime; smime-type=signed-data; name=\"smime.p7m\"\nContent-Transfer-Encoding: base64\n\n";
     const CERT_ID = 'CERT123';
+    const BUTTON_DATA = [
+        'cmd' => '_cart',
+        'upload' => '1',
+        'amount_1' => '1.00',
+        'item_name_1' => 'testing',
+        'business' => 'test@example.org',
+        'currency_code' => 'GBP'
+    ];
 
-    public function testEncrypt()
+    public function testEncryptWithValidKeysReturnsEncryptedData()
     {
         $paypalCert = new PaypalCertificate(__DIR__ . '/certs/paypal-cert.pem');
         $merchantCert = new MerchantCertificate(
@@ -24,20 +32,62 @@ class ButtonGeneratorTest extends TestCase
             __DIR__ . '/certs/merchant-key.pem'
         );
 
-        $button = [
-            'cmd' => '_cart',
-            'upload' => '1',
-            'amount_1' => '1.00',
-            'item_name_1' => 'testing',
-            'business' => 'test@example.org',
-            'currency_code' => 'GBP'
-        ];
+        $generator = new ButtonGenerator();
+
+        $data = $generator->encrypt($paypalCert, $merchantCert, self::BUTTON_DATA);
+
+        $this->assertEquals(array_merge(self::BUTTON_DATA, ['cert_id' => self::CERT_ID]), $this->paypalDecrypt($data));
+    }
+
+    /**
+     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
+     */
+    public function testEncryptWithInvalidMerchantCertThrowsException()
+    {
+        $paypalCert = new PaypalCertificate(__DIR__ . '/certs/paypal-cert.pem');
+        $merchantCert = new MerchantCertificate(
+            self::CERT_ID,
+            __DIR__ . '/certs/invalid-key.pem',
+            __DIR__ . '/certs/merchant-key.pem'
+        );
 
         $generator = new ButtonGenerator();
 
-        $data = $generator->encrypt($paypalCert, $merchantCert, $button);
+        $generator->encrypt($paypalCert, $merchantCert, self::BUTTON_DATA);
+    }
 
-        $this->assertEquals(array_merge($button, ['cert_id' => self::CERT_ID]), $this->paypalDecrypt($data));
+    /**
+     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
+     */
+    public function testEncryptWithInvalidMerchantKeyThrowsException()
+    {
+        $paypalCert = new PaypalCertificate(__DIR__ . '/certs/paypal-cert.pem');
+        $merchantCert = new MerchantCertificate(
+            self::CERT_ID,
+            __DIR__ . '/certs/merchant-cert.pem',
+            __DIR__ . '/certs/invalid-key.pem'
+        );
+
+        $generator = new ButtonGenerator();
+
+        $generator->encrypt($paypalCert, $merchantCert, self::BUTTON_DATA);
+    }
+
+    /**
+     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
+     */
+    public function testEncryptWithInvalidPaypalCertThrowsException()
+    {
+        $paypalCert = new PaypalCertificate(__DIR__ . '/certs/invalid-key.pem');
+        $merchantCert = new MerchantCertificate(
+            self::CERT_ID,
+            __DIR__ . '/certs/merchant-cert.pem',
+            __DIR__ . '/certs/merchant-key.pem'
+        );
+
+        $generator = new ButtonGenerator();
+
+        $generator->encrypt($paypalCert, $merchantCert, self::BUTTON_DATA);
     }
 
     protected function paypalDecrypt($data): array
