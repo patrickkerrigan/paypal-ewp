@@ -157,14 +157,6 @@ class ButtonGenerator implements ButtonGeneratorInterface
     }
 
     /**
-     * @param string $message
-     */
-    protected function encryptionException(string $message)
-    {
-        throw new EncryptionException($message);
-    }
-
-    /**
      * @param int $errNo
      * @param string $message
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
