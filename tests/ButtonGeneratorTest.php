@@ -3,6 +3,7 @@
 namespace Pkerrigan\PaypalEwp;
 
 use PHPUnit\Framework\TestCase;
+use Pkerrigan\PaypalEwp\Exception\EncryptionException;
 
 /**
  *
@@ -39,11 +40,10 @@ class ButtonGeneratorTest extends TestCase
         $this->assertEquals(array_merge(self::BUTTON_DATA, ['cert_id' => self::CERT_ID]), $this->paypalDecrypt($data));
     }
 
-    /**
-     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
-     */
     public function testEncryptWithInvalidMerchantCertThrowsException()
     {
+        $this->expectException(EncryptionException::class);
+
         $paypalCert = new PaypalCertificate(__DIR__ . '/certs/paypal-cert.pem');
         $merchantCert = new MerchantCertificate(
             self::CERT_ID,
@@ -56,11 +56,10 @@ class ButtonGeneratorTest extends TestCase
         $generator->encrypt($paypalCert, $merchantCert, self::BUTTON_DATA);
     }
 
-    /**
-     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
-     */
     public function testEncryptWithInvalidMerchantKeyThrowsException()
     {
+        $this->expectException(EncryptionException::class);
+
         $paypalCert = new PaypalCertificate(__DIR__ . '/certs/paypal-cert.pem');
         $merchantCert = new MerchantCertificate(
             self::CERT_ID,
@@ -73,11 +72,10 @@ class ButtonGeneratorTest extends TestCase
         $generator->encrypt($paypalCert, $merchantCert, self::BUTTON_DATA);
     }
 
-    /**
-     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
-     */
     public function testEncryptWithInvalidPaypalCertThrowsException()
     {
+        $this->expectException(EncryptionException::class);
+
         $paypalCert = new PaypalCertificate(__DIR__ . '/certs/invalid-key.pem');
         $merchantCert = new MerchantCertificate(
             self::CERT_ID,
@@ -137,7 +135,7 @@ class ButtonGeneratorTest extends TestCase
         $lines = explode("\n", $rawData);
         $variables = [];
         foreach ($lines as $line) {
-            list($key, $value) = explode("=", $line, 2);
+            [$key, $value] = explode("=", $line, 2);
             $variables[$key] = $value;
         }
 
