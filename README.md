@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/patrickkerrigan/paypal-ewp.svg?style=flat-square)](https://travis-ci.org/patrickkerrigan/paypal-ewp) [![Maintainability](https://api.codeclimate.com/v1/badges/6e655a8a9e3f3d9522f5/maintainability)](https://codeclimate.com/github/patrickkerrigan/paypal-ewp/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/6e655a8a9e3f3d9522f5/test_coverage)](https://codeclimate.com/github/patrickkerrigan/paypal-ewp/test_coverage) [![PHP 7.0](https://img.shields.io/badge/php-7.0-blue.svg?style=flat-square)](http://php.net/) [![Packagist](https://img.shields.io/packagist/v/pkerrigan/paypal-ewp.svg?style=flat-square)](https://packagist.org/packages/pkerrigan/paypal-ewp)
+[![Build Status](https://img.shields.io/github/workflow/status/patrickkerrigan/paypal-ewp/Tests.svg?style=flat-square)](https://github.com/patrickkerrigan/paypal-ewp/actions/workflows/tests.yml) [![Maintainability](https://api.codeclimate.com/v1/badges/6e655a8a9e3f3d9522f5/maintainability)](https://codeclimate.com/github/patrickkerrigan/paypal-ewp/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/6e655a8a9e3f3d9522f5/test_coverage)](https://codeclimate.com/github/patrickkerrigan/paypal-ewp/test_coverage) [![PHP 7.1](https://img.shields.io/badge/php-7.1-blue.svg?style=flat-square)](http://php.net/) [![Packagist](https://img.shields.io/packagist/v/pkerrigan/paypal-ewp.svg?style=flat-square)](https://packagist.org/packages/pkerrigan/paypal-ewp)
 
 # paypal-ewp
 A PHP library for generating encrypted PayPal buttons (EWP)
@@ -18,7 +18,7 @@ You'll need the following data to generate a button:
 The recommended way to install this library is via Composer:
 
 ```bash
-composer require pkerrigan/paypal-ewp ^1.0
+composer require pkerrigan/paypal-ewp ^1
 ```
 
 ## Usage
