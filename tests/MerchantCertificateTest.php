@@ -13,11 +13,10 @@ class MerchantCertificateTest extends TestCase
 {
     const CERT_ID = 'CERT123';
 
-    /**
-     * @expectedException \Pkerrigan\PaypalEwp\Exception\FileNotFoundException
-     */
     public function testGivenInvalidCertificatePathThrowsException()
     {
+        $this->expectException(\Pkerrigan\PaypalEwp\Exception\FileNotFoundException::class);
+
         new MerchantCertificate(
             self::CERT_ID,
             __DIR__ . '/certs/not-merchant-cert.pem',
@@ -25,11 +24,10 @@ class MerchantCertificateTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \Pkerrigan\PaypalEwp\Exception\FileNotFoundException
-     */
     public function testGivenInvalidKeyPathThrowsException()
     {
+        $this->expectException(\Pkerrigan\PaypalEwp\Exception\FileNotFoundException::class);
+
         new MerchantCertificate(
             self::CERT_ID,
             __DIR__ . '/certs/merchant-cert.pem',

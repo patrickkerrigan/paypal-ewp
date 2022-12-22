@@ -11,11 +11,10 @@ use PHPUnit\Framework\TestCase;
  */
 class PaypalCertificateTest extends TestCase
 {
-    /**
-     * @expectedException \Pkerrigan\PaypalEwp\Exception\FileNotFoundException
-     */
     public function testGivenInvalidPathThrowsException()
     {
+        $this->expectException(\Pkerrigan\PaypalEwp\Exception\FileNotFoundException::class);
+
         new PaypalCertificate(__DIR__ . '/certs/not-paypal-cert.pem');
     }
 

@@ -39,11 +39,10 @@ class ButtonGeneratorTest extends TestCase
         $this->assertEquals(array_merge(self::BUTTON_DATA, ['cert_id' => self::CERT_ID]), $this->paypalDecrypt($data));
     }
 
-    /**
-     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
-     */
     public function testEncryptWithInvalidMerchantCertThrowsException()
     {
+        $this->expectException(\Pkerrigan\PaypalEwp\Exception\EncryptionException::class);
+
         $paypalCert = new PaypalCertificate(__DIR__ . '/certs/paypal-cert.pem');
         $merchantCert = new MerchantCertificate(
             self::CERT_ID,
@@ -56,11 +55,10 @@ class ButtonGeneratorTest extends TestCase
         $generator->encrypt($paypalCert, $merchantCert, self::BUTTON_DATA);
     }
 
-    /**
-     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
-     */
     public function testEncryptWithInvalidMerchantKeyThrowsException()
     {
+        $this->expectException(\Pkerrigan\PaypalEwp\Exception\EncryptionException::class);
+
         $paypalCert = new PaypalCertificate(__DIR__ . '/certs/paypal-cert.pem');
         $merchantCert = new MerchantCertificate(
             self::CERT_ID,
@@ -73,11 +71,10 @@ class ButtonGeneratorTest extends TestCase
         $generator->encrypt($paypalCert, $merchantCert, self::BUTTON_DATA);
     }
 
-    /**
-     * @@expectedException \Pkerrigan\PaypalEwp\Exception\EncryptionException
-     */
     public function testEncryptWithInvalidPaypalCertThrowsException()
     {
+        $this->expectException(\Pkerrigan\PaypalEwp\Exception\EncryptionException::class);
+
         $paypalCert = new PaypalCertificate(__DIR__ . '/certs/invalid-key.pem');
         $merchantCert = new MerchantCertificate(
             self::CERT_ID,
